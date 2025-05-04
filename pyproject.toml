@@ -17,5 +17,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/2bitbit/torchpal"
-"Bug Tracker" = "https://github.com/2bitbit/torchpal/issues"
+"Homepage" = "https://github.com/2bitbit/torchpal/"
+"Bug Tracker" = "https://github.com/2bitbit/torchpal/issues/"
