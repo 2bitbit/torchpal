@@ -1,0 +1,63 @@
+# 工作流程的名称，会显示在 GitHub Actions 页面
+name: Publish Python Package to PyPI
+
+# 触发工作流程的事件
+on:
+  # 1. 当你推送一个以 'v' 开头的 Git 标签时触发 (例如 v0.1.0, v1.0.0)
+  # 这是最推荐的发布方式
+  push:
+    tags:
+      - 'v*'
+  # 2. 允许你手动在 GitHub Actions 页面触发这个工作流程
+  workflow_dispatch:
+
+# 定义一个或多个作业 (jobs)
+jobs:
+  # 定义一个名为 'deploy' 的作业
+  deploy:
+    # 指定运行作业的虚拟机环境，这里使用最新的 Ubuntu
+    runs-on: ubuntu-latest
+
+    # 定义作业所需的权限
+    # !! 这是使用 OIDC (Trusted Publishing) 的关键 !!
+    permissions:
+      # 允许生成新的OIDC身份令牌并读取令牌
+      id-token: write
+      # 允许检出代码库内容
+      contents: read
+
+    # 作业包含的一系列步骤 (steps)
+    steps:
+    # 第一步：检出你的代码库
+    # 'actions/checkout' 是 GitHub 官方提供的一个 Action，用来下载你的仓库代码到虚拟机
+    - uses: actions/checkout@v4 # 使用 v4 版本，通常建议用最新主版本
+
+    # 第二步：设置 Python 环境
+    # 'actions/setup-python' 也是官方 Action，用来安装指定版本的 Python
+    - name: Set up Python
+      uses: actions/setup-python@v5 # 使用 v5 版本
+      with:
+        # 指定你希望使用的 Python 版本
+        python-version: '3.x' # '3.x' 会使用仓库中最新的 Python 3 版本
+
+    # 第三步：安装构建依赖
+    # 我们需要 'build' 这个库来将你的源代码打包成 PyPI 能识别的格式 (wheel 和 sdist)
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+
+    # 第四步：构建你的 Python 包
+    # 运行 'python -m build' 命令，它会根据你的 'pyproject.toml' (或 setup.py) 文件
+    # 在当前目录下生成一个 'dist' 文件夹，里面包含 .whl 和 .tar.gz 文件
+    - name: Build package
+      run: python -m build
+
+    # 第五步：发布包到 PyPI
+    # 使用 PyPA (Python Packaging Authority) 官方提供的 'pypi-publish' Action
+    # 这个 Action 会自动处理 OIDC 认证（因为上面设置了 permissions.id-token: write）
+    # 它会查找 'dist' 文件夹下的包文件并上传
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      # 或者使用最新版本
+      # 注意：这里不需要提供 PYPI_API_TOKEN，因为我们用了 Trusted Publishing (OIDC)

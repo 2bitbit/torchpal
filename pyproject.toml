@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=70.0", "wheel"] # 构建系统需要的依赖
+build-backend = "setuptools.build_meta"  # 构建后端
+
+[project]
+name = "torchpal"
+version = "0.0.1"
+authors = [{ name = "2bitbit" }]
+description = "PyTorch辅助工具包：极度新手友好的 PyTorch 伴侣"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/2bitbit/torchpal"
+"Bug Tracker" = "https://github.com/2bitbit/torchpal/issues"
