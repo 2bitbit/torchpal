@@ -172,7 +172,7 @@ model = tp.utils.load_model_state(model, "path/to/model.pth")
 4.  推送到分支 (`git push origin feature/AmazingFeature`)
 5.  提交一个 Pull Request
 
-也欢迎在 [Issues](...) 页面提出问题或建议。
+欢迎在 [Issues](...) 页面提出问题或建议。
 
 ## 📜 许可证
 
