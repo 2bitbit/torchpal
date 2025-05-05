@@ -1,6 +1,5 @@
 from PIL.Image import Image
 import torch
-import sys
 import os
 import shutil
 import matplotlib.pyplot as plt
@@ -9,7 +8,7 @@ from matplotlib_inline import backend_inline
 from IPython.display import display, clear_output
 import ipywidgets as widgets
 from typing import Iterable
-from ._constants import BACKUPS_DIR, STATE_DICTS_DIR
+from .._config._constants import BACKUPS_DIR, STATE_DICTS_DIR
 
 
 # region settings
@@ -104,7 +103,7 @@ class Animator:
         # 显示初始图
         display(self.dynamic_output)
 
-    def add(self, ax_num: int, new_epoch: int, new_values: list[float]):
+    def add(self, ax_num: int, new_epoch: int, new_values: list[float]) -> None:
         """
         按照传入的legend的顺序添加新的训练数据点
 

@@ -2,7 +2,7 @@ import torch
 from torch.utils import data
 from torchvision import datasets, transforms
 from typing import Any
-from ._constants import DATASETS_DIR
+from .._config._constants import DATASETS_DIR
 
 
 
