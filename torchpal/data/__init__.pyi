@@ -1,6 +1,5 @@
-import torch
-from ._constants import DATASETS_DIR as DATASETS_DIR
 from torch.utils import data
+import torch
 from typing import Any
 
 def load_dataset(name: str, batch_size: int, resize: Any = None) -> tuple[data.DataLoader, data.DataLoader]: ...

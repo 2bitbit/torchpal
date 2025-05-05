@@ -5,9 +5,9 @@ from torch import nn
 from sklearn.model_selection import KFold
 import datetime
 from typing import Callable
-from .utils import Accumulator, Animator, backup_script
-from .data import make_DataLoader
-from ._constants import SUBMISSION_DIR
+from ..utils import Accumulator, Animator, backup_script
+from ..data import make_DataLoader
+from .._config._constants import SUBMISSION_DIR
 
 
 class RegressionAutoManager:
@@ -27,7 +27,7 @@ class RegressionAutoManager:
         criterion_params: dict,
         optimizer_cls: torch.optim.Optimizer,
         optimizer_params: dict,
-        device="cuda",
+        device: str = "cuda",
     ):
         """
         建议原来的 Tensor 都在 CPU 上，在需要的时候 Manager 会自动转到 device 上。以减少 VRAM 占用。\n
@@ -234,7 +234,7 @@ class RegressionAutoManager:
         batch_size: int = 512,
         model_path: str,
         submission_dir: str = SUBMISSION_DIR,
-        device="cuda",
+        device: str = "cuda",
     ):
         """
         预测，返回预测结果
@@ -326,6 +326,6 @@ class ClassificationAutoManager(RegressionAutoManager):
         batch_size: int = 512,
         model_path: str,
         submission_dir: str = SUBMISSION_DIR,
-        device="cuda",
+        device: str = "cuda",
     ):
         super().predict(test_df=test_df, model=model, pred_col_name=pred_col_name, batch_size=batch_size, model_path=model_path, submission_dir=submission_dir, device=device)

@@ -1,7 +1,7 @@
 # data analysis
 import pandas as pd
 import os
-from ._constants import PROCESSED_DATA_DIR
+from .._config._constants import PROCESSED_DATA_DIR
 
 
 

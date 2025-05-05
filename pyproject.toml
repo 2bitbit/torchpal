@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"  # 构建后端
 
 [project]
 name = "torchpal"
-version = "0.0.1"
+version = "0.0.2"
 authors = [{ name = "2bitbit" }]
 description = "PyTorch辅助工具包：极度新手友好的 PyTorch 伴侣"
 readme = "README.md"
