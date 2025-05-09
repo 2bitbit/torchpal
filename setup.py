@@ -1,7 +1,11 @@
+import os
 from setuptools import setup
 
-# 读取 requirements.txt 文件内容
-with open('requirements.txt', 'r', encoding='utf-8') as f:
+# 获取 setup.py 文件所在的目录的绝对路径
+_HERE = os.path.abspath(os.path.dirname(__file__))
+
+# 使用绝对路径读取 requirements.txt 文件内容
+with open(os.path.join(_HERE, 'requirements.txt'), 'r', encoding='utf-8') as f:
     install_requires = f.read().splitlines()
 
 setup(

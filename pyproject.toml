@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=70.0", "wheel"] # 构建系统需要的依赖
+requires = ["setuptools>=75.0", "wheel"] # 构建系统需要的依赖
 build-backend = "setuptools.build_meta"  # 构建后端
 
 [project]
@@ -9,10 +9,10 @@ authors = [{ name = "2bitbit" }]
 description = "PyTorch辅助工具包：极度新手友好的 PyTorch 伴侣"
 readme = "README.md"
 requires-python = ">=3.10"
+license = "MIT"
 dynamic = ["dependencies"]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
