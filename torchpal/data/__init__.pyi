@@ -1,5 +1,5 @@
-from torch.utils import data
 import torch
+from torch.utils import data
 from typing import Any
 
 def load_dataset(name: str, batch_size: int, resize: Any = None) -> tuple[data.DataLoader, data.DataLoader]: ...

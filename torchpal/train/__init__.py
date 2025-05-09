@@ -1,1 +1,1 @@
-from ._train import RegressionAutoManager, ClassificationAutoManager
+from ._train import RegressionManager, ClassificationManager

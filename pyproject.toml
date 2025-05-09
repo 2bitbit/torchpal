@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"  # 构建后端
 
 [project]
 name = "torchpal"
-version = "0.0.2"
+version = "0.1.0"
 authors = [{ name = "2bitbit" }]
 description = "PyTorch辅助工具包：极度新手友好的 PyTorch 伴侣"
 readme = "README.md"
 requires-python = ">=3.10"
+dynamic = ["dependencies"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",

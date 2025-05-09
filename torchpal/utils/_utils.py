@@ -5,8 +5,7 @@ import shutil
 import matplotlib.pyplot as plt
 import datetime
 from matplotlib_inline import backend_inline
-from IPython.display import display, clear_output
-import ipywidgets as widgets
+from IPython.display import display, update_display
 from typing import Iterable
 from .._config._constants import BACKUPS_DIR, STATE_DICTS_DIR
 
@@ -18,25 +17,26 @@ plt.rcParams["axes.unicode_minus"] = False  # 解决负号显示异常问题
 
 
 # region backup
-def backup_script(src_file_or_dir_path: str, dst_dir: str = BACKUPS_DIR):
+def backup_script(timestamp: str | None, src_file_or_dir_path: str, dst_dir: str = BACKUPS_DIR):
     """
-    备份文件或文件夹的脚本。日期格式：月日_时分
+    备份文件或文件夹的脚本。日期格式：月日_时分秒\n
+    timestamp: 时间戳，如果为None，则使用当前时间。
     """
     src_file_or_dir_path = os.path.normpath(src_file_or_dir_path)
     os.makedirs(dst_dir, exist_ok=True)  # 生成一个保存备份的目录
-    timestamp = datetime.datetime.now().strftime("%m%d_%H%M")  # 时间戳
+    timestamp = datetime.datetime.now().strftime("%m%d_%H%M%S") if timestamp is None else timestamp
     try:
-        if os.path.isdir(src_file_or_dir_path):  # 复制整个目录
+        if os.path.isdir(src_file_or_dir_path):
             src_dir_path = src_file_or_dir_path
             src_dir_name = os.path.basename(src_dir_path)
             backup_dst_path = os.path.join(dst_dir, f"{src_dir_name}_{timestamp}")
-            shutil.copytree(src_dir_path, backup_dst_path)
+            shutil.copytree(src_dir_path, backup_dst_path)  # copytree将src目录（不含）下的所有内容复制到dst目录下
             print(f"Source directory backed up to: {backup_dst_path}")
         else:  # 复制单个文件
             src_file_path = src_file_or_dir_path
             src_file_name, src_file_ext = os.path.splitext(os.path.basename(src_file_path))
             backup_dst_path = os.path.join(dst_dir, f"{src_file_name}_{timestamp}{src_file_ext}")
-            shutil.copy2(src_file_path, backup_dst_path) 
+            shutil.copy2(src_file_path, backup_dst_path)
             print(f"Source file backed up to: {backup_dst_path}")
     except Exception as e:
         raise e
@@ -81,14 +81,35 @@ class Animator:
     （动画会单独在一个widget里面渲染，不必担心影响单元格其他输出。）
     """
 
-    def __init__(self, *, num_axes, num_epochs, ylim, legend, xlabel="epoch", ylabel="value", xscale="linear", yscale="linear", fmts=("-", "--", "-.", ":"), ax_size=(3.5, 2.5), line_width=1):
+    def __init__(
+        self,
+        *,
+        num_axes,
+        num_epochs,
+        ylim,
+        legend,
+        xlabel="epoch",
+        ylabel="value",
+        xscale="linear",
+        yscale="linear",
+        fmts=...,
+        ax_size=...,
+        line_width=1,
+    ):
         """
         Args:
             num_axes: 绘制图表的个数
             num_epochs: 训练的轮次
             legend: 图例的列表
+            fmts: 绘制图表的格式，默认是("-", "--", "-.", ":")无限循环
+            ax_size: 每个图表的尺寸，默认是(len(legend)+14)/15*(3.5, 2.5)
         """
-        self.dynamic_output = widgets.Output(layout=widgets.Layout(border="1.5px solid"))
+        # 根据legend的长度，确定fmts的长度
+        if fmts is ...:
+            fmts = ["-", "--", "-.", ":"] * (len(legend) // 4 + 1)
+        if ax_size is ...:
+            ax_size = [3.5 * (len(legend) + 14) / 15, 2.5 * (len(legend) + 14) / 15]
+
         self._set_backend_inline()
         self.fig, self.axes = plt.subplots(1, num_axes, figsize=(ax_size[0] * num_axes, ax_size[1]))
         self.axes = [self.axes] if num_axes == 1 else self.axes  # 确保axes是一个列表
@@ -98,10 +119,12 @@ class Animator:
         self.fmts = fmts
         self.num_legends = len(legend)  # 指标的个数
         self.matrices = []  # 使用列表，允许每个矩阵的shape不同。
+        """
+        每一行是一次训练结束后的数据：第一列是该训练周期，后面全是指标（in same order with self.legend）。
+        """
         for _ in range(num_axes):
-            self.matrices.append(torch.zeros(0, 1 + self.num_legends, dtype=torch.float32))  # 列：第一列是训练轮次，后面是指标向量
-        # 显示初始图
-        display(self.dynamic_output)
+            self.matrices.append(torch.zeros(0, 1 + self.num_legends, dtype=torch.float32)) 
+        self._plot_handle = display(self.fig, display_id=True)
 
     def add(self, ax_num: int, new_epoch: int, new_values: list[float]) -> None:
         """
@@ -121,10 +144,12 @@ class Animator:
         ax.clear()
         for i in range(self.num_legends):
             ax.plot(self.matrices[ax_num][:, 0], self.matrices[ax_num][:, i + 1], self.fmts[i], label=self.legend[i])
+        plt.tight_layout()
+
         self._config_axes(ax)
-        with self.dynamic_output:  # 在 dynamic_output 区域内执行动态更新
-            display(self.fig)
-            clear_output(wait=True)
+
+        update_display(self.fig, display_id=self._plot_handle.display_id)
+        plt.close(self.fig)  # 避免一个块内的所有代码运行结束后 ipynb 自动再呈现一遍 fig
 
     def _set_backend_inline(self):
         """设置matplotlib的backend为inline"""
@@ -167,17 +192,18 @@ def show_images(imgs: Iterable[torch.Tensor | Image], num_rows: int, num_cols: i
 
 
 # region model save & load
-def save_model_state(model: torch.nn.Module, dir: str = STATE_DICTS_DIR):
+def save_model_state(model: torch.nn.Module, dir: str = STATE_DICTS_DIR) -> str:
     """
     保存模型状态字典
     """
     os.makedirs(dir, exist_ok=True)  # 确保目录存在
     class_name = model.__class__.__name__
-    timestamp = datetime.datetime.now().strftime("%m%d_%H%M")
+    timestamp = datetime.datetime.now().strftime("%m%d_%H%M%S")
     f_name = f"{class_name}_{timestamp}.pth"
     path = os.path.join(dir, f_name)
     torch.save(model.state_dict(), path)
     print(f"模型状态字典已保存到 {path}")
+    return path
 
 
 def load_model_state(model: torch.nn.Module, path: str):
