@@ -18,11 +18,10 @@
 
 ## 🌟 特色功能
 
-- **自动化训练与评估**: 为常见的回归和分类任务提供自动化管理器，无需手动编写训练循环、验证逻辑
-- **实时可视化**: 实时可视化训练与评估过程，支持自定义指标进行绘制，直观展示模型性能
-- **K 折交叉验证**: 内置支持 K 折交叉验证，方便评估模型性能和稳定性
+- **自动化训练与评估**: 为常见的回归和分类任务提供自动化管理器，无需手动编写训练循环、验证逻辑（内置 K 折交叉验证）
+- **实时可视化**: 实时可视化训练与评估过程，直观展示模型性能；支持自定义指标进行绘制，
 - **探索性训练**: 支持在小型数据子集上快速运行训练，帮助初步验证模型架构或超参数设置的合理性
-- **实用工具集**: 提供丰富的实用工具，如提供模型保存/加载、脚本备份、数据加载等常用辅助功能
+- **实用工具集**: 提供丰富的实用工具，如提供模型保存/加载、脚本备份、图片展示等常用辅助功能
 
 ## ⚡ 快速开始
 
@@ -35,57 +34,33 @@ pip install torchpal
 ### 基础使用（以回归任务为例）
 [点击查看完整示例代码](example.ipynb)
 
-
-```python
-# 定义 MAE 函数 (输入为批量的 y_hat 和 y)
-def mean_absolute_error(y_hat, y):
-    # 函数需返回该批量的指标 *总和*
-    return (y_hat - y).abs().sum().item()
-
-# 在训练/评估时通过 metric_names 传入指标名称
-manager.train_and_eval(k_folds=5, batch_size=32, num_epochs=100, metric_names=["loss", "mae"])  # 加入自定义指标 "mae"
-```
-
 ## 📚 模块概览
 
 - **`tp.train`**: 包含 `RegressionAutoManager` 和 `ClassificationAutoManager`，用于自动化训练和评估流程。
-- **`tp.utils`**: 提供实用工具，如：
-  - `Animator`: 实时绘制训练曲线。
-  - `Accumulator`: 累加训练指标。
-  - `save_model_state` / `load_model_state`: 保存和加载模型状态。
-  - `backup_script`: 备份指定文件或目录。
-  - `show_images`: 展示图像。
-- **`tp.data`**: 数据处理相关工具，如：
-  - `make_DataLoader`: 从 Tensor 创建 DataLoader。
-  - `load_dataset`: 加载 torchvision 常见数据集。
-- **`tp.da`**: 简单的数据分析工具 (基于 Pandas)，如：
-  - `describe_df`: 计算并保存 DataFrame 的描述性统计信息。
-  - `save_df`: 将 DataFrame 保存为 CSV。
+- **`tp.utils`**: 提供实用工具
+- **`tp.data`**: 数据处理相关工具
+- **`tp.da`**: 简单的数据分析工具 (基于 Pandas)
 
-_提示：TorchPal 优化了类型提示，您可以在编码时利用 IDE 的代码补全功能查看各模块和函数的可用参数及说明。_
+
+提示：TorchPal 优化了类型提示，您可以在编码时利用 IDE 的提示与代码补全功能轻松查看各模块的内容、函数的可用参数及说明。
 
 ## 🤝 贡献
 
 欢迎各种形式的贡献！
 
-1.  **发现 Bug 或有功能建议？** 请在 [GitHub Issues](https://github.com/your_username/torchpal/issues) 提出 (请将 `your_username/torchpal` 替换为你的实际仓库地址)。
-2.  **贡献代码？**
+1.  **发现 Bug 或有功能建议？** 请在 [GitHub Issues](https://github.com/2bitbit/torchpal/issues) 提出。
+2.  **贡献代码：**
     - Fork 本仓库。
     - 创建特性分支 (`git checkout -b feature/YourAmazingFeature`)。
     - 提交更改 (`git commit -m 'Add some AmazingFeature'`)。
     - 推送到分支 (`git push origin feature/YourAmazingFeature`)。
     - 提交 Pull Request。
 
-## 📜 许可证
-
-本项目采用 MIT 许可证 - 详情请参阅 [LICENSE](LICENSE) 文件。
-
 ## 🙏 致谢
 
 - 感谢 PyTorch 团队。
 - 感谢所有开源贡献者。
 
----
 
 <p align="center">
   <b>TorchPal - 让 PyTorch 更简单，让想法更快落地！</b><br>
